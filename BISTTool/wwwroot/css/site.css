@@ -1,0 +1,28 @@
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+}
+
+/* CSS for red background with 15% opacity */
+.red-background {
+    background-color: rgba(255, 0, 0, 0.15) !important;
+}
+
+/* CSS for green background with 15% opacity */
+.green-background {
+    background-color: rgba(0, 255, 0, 0.15) !important;
+}

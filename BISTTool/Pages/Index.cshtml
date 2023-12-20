@@ -1,0 +1,141 @@
+﻿@page
+@model BISTTool.Pages.IndexModel
+
+<div>USD/TRY: @ViewData["UsdPrice"]</div>
+<p></p>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Lot</th>
+            <th>Birim Maliyet</th>
+            <th>Birim Fiyat</th>
+            <th>Birim KZ</th>
+            <th>Günlük Değişim</th>
+            <th>Birim Değişim Yüzdesi</th>
+            <th>Satılan Birim Satış Fiyatı</th>
+            <th>Tutar</th>
+            <th>Total KZ</th>
+            <th>Toplam</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.BISTResults)
+        {
+            @if (item.Name == "TRY") continue;
+
+            @if (item.isTotallySelled)
+            {
+                <tr>
+                    <td style="background-color:coral">@item.Name.Split('.')[0].ToUpperInvariant()</td>
+                    <td>@(item.Miktar                         )</td>
+                    <td>@(item.BirimMaliyet.ToString("N2") + " ₺"            )</td>
+                    <td>@(item.BirimFiyat + " ₺"              )</td>
+                     <td class="@(item.BirimKZ < 0 ? "red-background" : "green-background")">
+                        @item.BirimKZ.ToString("N2") ₺
+                    </td>
+                    <td>@(item.GunlukDegisim.ToString("N2") + " %"           )</td>
+                    <td>@(item.BirimDegisimYuzde.ToString("N2") + " %"       )</td>
+                    <td>@(item.SatilanBirimSatisFiyati.ToString("N2") + " ₺" )</td>
+                    <td>@(item.Tutar.ToString("N2")  + " ₺"                   )</td>
+                    <td>@(item.TotalKZ.ToString("N2") + " ₺"                  )</td>
+                    <td>@((item.TotalKZ + item.Tutar).ToString("N2") + " ₺"  )</td>
+                </tr>
+            }
+            else
+            {
+                <tr>
+                    <td style="background-color:aquamarine">@item.Name.Split('.')[0].ToUpperInvariant()</td>
+                    <td>@(item.Miktar                         )</td>
+                    <td>@(item.BirimMaliyet.ToString("N2") + " ₺"            )</td>
+                    <td>@(item.BirimFiyat + " ₺"              )</td>
+                    <td class="@(item.BirimKZ < 0 ? "red-background" : "green-background")">
+                        @item.BirimKZ.ToString("N2") ₺
+                    </td>
+                    <td>@(item.GunlukDegisim.ToString("N2") + " %"           )</td>
+                    <td>@(item.BirimDegisimYuzde.ToString("N2") + " %"       )</td>
+                    <td>@("")</td>
+                    <td>@(item.Tutar.ToString("N2") + " ₺"                   )
+                    <td>@(item.TotalKZ.ToString("N2") + " ₺"                  )</td>
+                    <td>@((item.TotalKZ + item.Tutar).ToString("N2") + " ₺"  )</td>
+                </tr>
+            }
+        }
+        <tr>
+            <td>Toplam TL</td>
+            <td colspan="7"></td>
+            <td>@(((double)ViewData["TotalTutar"]).ToString("N2") + " ₺")</td>
+            <td>@(((double)ViewData["TotalTotalKZ"]).ToString("N2") + " ₺")</td>
+            <td>@(((double)ViewData["TotalTotalKZ"] + (double)ViewData["TotalTutar"]).ToString("N2") + " ₺")</td>
+        </tr>
+        <tr>
+            <td>Toplam USD</td>
+            <td colspan="7"></td>
+            <td>@(((double)ViewData["TotalTutarUsd"]).ToString("N2") + " $")</td>
+            <td>@(((double)ViewData["SimdikiToplam"] - (double)ViewData["TotalTutarUsd"]).ToString("N2") + " $")</td>
+            <td>@(((double)ViewData["SimdikiToplam"]).ToString("N2") + " $")</td>
+        </tr>
+    </tbody>
+</table>
+
+
+<form method="post">
+    <button type="submit" asp-page-handler="MyButtonClick">Yenile</button>
+</form>
+
+<p></p>
+
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Tarih</th>
+            <th>USD/TRY</th>
+            <th>Toplam Maliyet</th>
+            <th>Toplam Maliyet USD</th>
+            <th>Toplam Kar/Zarar</th>
+            <th>Toplam Kar/Zarar USD</th>
+            <th>Toplam Portföy</th>
+            <th>Toplam Portföy USD</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.BISTReports)
+        {
+            <tr>
+                <td style="background-color:beige">@item.Date.ToLongDateString()</td>
+                <td>@(item.USDTRY + " ₺")</td>
+                <td>@(item.TotalMaliyet.ToString("N2") + " ₺"            )</td>
+                <td>@(item.TotalMaliyetUSD.ToString("N2") + " $")</td>
+                <td class="@(item.TotalKz < 0 ? "red-background" : "green-background")">
+                    @item.TotalKz.ToString("N2") ₺
+                </td>
+                <td class="@(item.TotalKzUSD < 0 ? "red-background" : "green-background")">
+                    @item.TotalKzUSD.ToString("N2") $
+                </td>
+                <td>@(item.PortfolioTotal.ToString("N2") + " ₺"           )</td>
+                <td>@(item.PortfolioTotalUSD.ToString("N2") + " $"       )</td>
+            </tr>
+        }
+
+    </tbody>
+</table>
+
+
+
+
+<script>
+    // Function to refresh the page
+    function refreshPage() {
+        location.reload(); // Reload the page to rerun the OnGet method
+    }
+
+    // Attach an onclick event handler to the button
+    document.getElementById("refreshButton").onclick = function () {
+        refreshPage(); // Call the refreshPage function when the button is clicked
+    };
+
+    // Schedule the next refresh after 10 minutes
+    setTimeout(refreshPage, 600000); // 600000 ms = 10 minutes
+</script>
